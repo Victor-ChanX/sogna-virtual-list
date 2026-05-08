@@ -110,4 +110,69 @@ describe("SognaVirtualList", () => {
       },
     ]);
   });
+
+  it("uses top-down message flow by default", () => {
+    const root = createRoot(container);
+
+    act(() => {
+      root.render(
+        <SognaVirtualListTestingContext.Provider
+          value={{
+            itemHeight: 20,
+            viewportHeight: 100,
+          }}
+        >
+          <SognaVirtualList<Message, null>
+            computeItemKey={({ data }) => data.id}
+            initialData={[
+              {
+                id: "1",
+                text: "hello",
+              },
+            ]}
+            ItemContent={ItemContent}
+          />
+        </SognaVirtualListTestingContext.Provider>,
+      );
+    });
+
+    const list = container.querySelector<HTMLElement>(
+      "[data-testid='sogna-virtual-list-list']",
+    );
+
+    expect(list?.style.marginTop).toBe("0px");
+  });
+
+  it("supports bottom-up message flow for classic chat alignment", () => {
+    const root = createRoot(container);
+
+    act(() => {
+      root.render(
+        <SognaVirtualListTestingContext.Provider
+          value={{
+            itemHeight: 20,
+            viewportHeight: 100,
+          }}
+        >
+          <SognaVirtualList<Message, null>
+            computeItemKey={({ data }) => data.id}
+            initialData={[
+              {
+                id: "1",
+                text: "hello",
+              },
+            ]}
+            ItemContent={ItemContent}
+            messageFlow="bottom-up"
+          />
+        </SognaVirtualListTestingContext.Provider>,
+      );
+    });
+
+    const list = container.querySelector<HTMLElement>(
+      "[data-testid='sogna-virtual-list-list']",
+    );
+
+    expect(list?.style.marginTop).toBe("80px");
+  });
 });

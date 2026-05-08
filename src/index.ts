@@ -28,6 +28,7 @@ export type {
   ItemLocationCallbackParams,
   ItemLocationWithAlign,
   ListScrollLocation,
+  MessageFlow,
   ScrollBehavior,
   ScrollElementComponent,
   ScrollModifier,

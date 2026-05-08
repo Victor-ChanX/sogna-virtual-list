@@ -156,8 +156,9 @@ function SognaVirtualListInner<Data, Context>(
     initialData = [],
     computeItemKey = defaultComputeItemKey<Data, Context>,
     context = null as Context,
-    initialLocation = null,
-    shortSizeAlign = "top",
+    initialLocation: initialLocationProp,
+    messageFlow = "top-down",
+    shortSizeAlign: shortSizeAlignProp,
     onScroll,
     onRenderedDataChange,
     ItemContent = defaultItemContent as ItemContent<Data, Context>,
@@ -183,6 +184,17 @@ function SognaVirtualListInner<Data, Context>(
     ...scrollerProps
   } = props;
   const testingContext = useContext(SognaVirtualListTestingContext);
+  const shortSizeAlign =
+    shortSizeAlignProp ?? (messageFlow === "bottom-up" ? "bottom" : "top");
+  const initialLocation =
+    initialLocationProp ??
+    (messageFlow === "bottom-up"
+      ? ({
+          index: "LAST",
+          align: "end",
+          behavior: "auto",
+        } as const)
+      : null);
   const initialControlledData = controlledData?.data;
   const [listData, setListDataState] = useState<Data[]>(() =>
     (initialControlledData ?? initialData ?? []).slice(),

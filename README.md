@@ -42,6 +42,9 @@ Passing either prop falls back to the internal scroller and logs a warning.
 
 ## Basic Usage
 
+The default flow is `top-down`: the first message starts at the top and new
+messages grow downward.
+
 ```tsx
 import { SognaVirtualList } from "sogna-virtual-list";
 
@@ -56,14 +59,6 @@ export function ChatList({ messages }: { messages: Message[] }) {
     <SognaVirtualList<Message, null>
       data={{
         data: messages,
-        scrollModifier: {
-          type: "item-location",
-          location: {
-            index: "LAST",
-            align: "end",
-            behavior: "auto",
-          },
-        },
       }}
       context={null}
       computeItemKey={({ data }) => data.id}
@@ -74,11 +69,24 @@ export function ChatList({ messages }: { messages: Message[] }) {
           </div>
         </div>
       )}
-      shortSizeAlign="bottom"
       style={{ height: 480, width: "100%" }}
     />
   );
 }
+```
+
+For a classic chat window where short conversations sit at the bottom and the
+initial view opens on the latest item, use `messageFlow="bottom-up"`.
+
+```tsx
+<SognaVirtualList<Message, null>
+  data={{ data: messages }}
+  messageFlow="bottom-up"
+  context={null}
+  computeItemKey={({ data }) => data.id}
+  ItemContent={({ data }) => <div>{data.text}</div>}
+  style={{ height: 480 }}
+/>
 ```
 
 ## Streaming Updates
@@ -113,7 +121,6 @@ function StreamingChat({ messages }: { messages: Message[] }) {
       context={null}
       computeItemKey={({ data }) => data.id}
       ItemContent={({ data }) => <div>{data.content}</div>}
-      shortSizeAlign="bottom"
       style={{ height: "100%" }}
     />
   );
@@ -253,6 +260,8 @@ Core props:
 - `data`: controlled data with an optional `scrollModifier`.
 - `initialData`: uncontrolled initial data.
 - `context`: arbitrary value passed to render slots.
+- `messageFlow`: `"top-down"` by default. Use `"bottom-up"` for classic
+  bottom-aligned chat behavior.
 - `computeItemKey`: stable key resolver.
 - `ItemContent`: item renderer.
 - `Header`, `StickyHeader`, `Footer`, `StickyFooter`, `EmptyPlaceholder`:
@@ -260,7 +269,8 @@ Core props:
 - `ScrollElement`: custom scroll element component or `"div"`.
 - `onScroll`: receives the current `ListScrollLocation`.
 - `onRenderedDataChange`: receives the currently rendered data range.
-- `shortSizeAlign`: `"top"`, `"bottom"`, or `"bottom-smooth"`.
+- `shortSizeAlign`: `"top"`, `"bottom"`, or `"bottom-smooth"`. Overrides the
+  alignment implied by `messageFlow`.
 - `increaseViewportBy`: extra pixels rendered above and below the viewport.
 - `itemIdentity`: identity resolver used by item-size cache logic.
 - `enforceStickyFooterAtBottom`: keeps the sticky footer pinned when possible.

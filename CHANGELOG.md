@@ -4,6 +4,8 @@
 
 - Initial public npm release of `sogna-virtual-list`.
 - Added `SognaVirtualList` with dynamic-height virtualization.
+- Added `messageFlow`, defaulting to top-down message layout with an opt-in
+  bottom-up mode for classic chat windows.
 - Added controlled `data` support with `scrollModifier`.
 - Added imperative data methods including `append`, `prepend`, `insert`,
   `deleteRange`, `findAndDelete`, `map`, `mapWithAnchor`, `replace`, `batch`,

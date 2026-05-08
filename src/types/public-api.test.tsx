@@ -6,6 +6,7 @@ import type {
   ScrollModifier,
   SognaVirtualListMethods,
   SognaVirtualListProps,
+  MessageFlow,
 } from "./index";
 import { SognaVirtualList } from "../components/SognaVirtualList";
 
@@ -35,12 +36,15 @@ const modifier: ScrollModifier = {
   },
 };
 
+const flow: MessageFlow = "top-down";
+
 export const typedElement = (
   <SognaVirtualList<Message, Context>
     ref={ref}
     context={{
       channelId: "general",
     }}
+    messageFlow={flow}
     data={{
       data: [
         {

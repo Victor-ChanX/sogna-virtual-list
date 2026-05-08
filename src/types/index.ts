@@ -18,6 +18,8 @@ export type ItemLocation = number | ItemLocationWithAlign;
 
 export type ShortSizeAlign = "top" | "bottom" | "bottom-smooth";
 
+export type MessageFlow = "top-down" | "bottom-up";
+
 export interface ItemLocationWithAlign {
   index: number | "LAST";
   align?: "start" | "center" | "end" | "start-no-overflow";
@@ -200,6 +202,7 @@ export interface SognaVirtualListMethods<Data = unknown, Context = unknown> {
 export interface SognaVirtualListProps<Data, Context> extends ScrollerProps {
   initialData?: Data[];
   context?: Context;
+  messageFlow?: MessageFlow;
   initialLocation?: ItemLocation;
   computeItemKey?: (params: {
     data: Data;
