@@ -49,9 +49,6 @@
   "scripts": {
     "build": "npm run clean && tsc -p tsconfig.build.json && vite build",
     "clean": "rm -rf dist",
-    "demo": "vite demo --config demo/vite.config.ts",
-    "site": "vite site --config site/vite.config.ts",
-    "site:build": "vite build site --config site/vite.config.ts",
     "pack:dry-run": "npm pack --dry-run",
     "prepack": "npm run build",
     "prepublishOnly": "npm run typecheck && npm run test",

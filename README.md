@@ -366,18 +366,8 @@ npm run build
 npm run pack:dry-run
 ```
 
-Run the local streaming-chat demo (token streaming, history loading, trims):
-
-```bash
-npm run demo
-```
-
-Run the bilingual docs & demo site (build a static version with
-`npm run site:build`; output lands in `site/dist`):
-
-```bash
-npm run site
-```
+The documentation site with live streaming/prepend demos lives in its own
+repository: [`sogna-virtual-list-site`](https://github.com/Victor-ChanX/sogna-virtual-list-site).
 
 Run the full local validation before publishing:
 

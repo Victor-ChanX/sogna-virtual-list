@@ -59,7 +59,8 @@ and fast. The public API is unchanged apart from additions.
 - `SognaVirtualListTestingContextValue.getItemHeight` for per-item
   deterministic heights in tests, and an exported `installTestHarness` with a
   controllable `ResizeObserver` mock.
-- A local demo app (`npm run demo`).
+- A bilingual documentation site with live demos, in its own repository
+  (`sogna-virtual-list-site`).
 
 ### Removed
 
