@@ -372,6 +372,13 @@ Run the local streaming-chat demo (token streaming, history loading, trims):
 npm run demo
 ```
 
+Run the bilingual docs & demo site (build a static version with
+`npm run site:build`; output lands in `site/dist`):
+
+```bash
+npm run site
+```
+
 Run the full local validation before publishing:
 
 ```bash
