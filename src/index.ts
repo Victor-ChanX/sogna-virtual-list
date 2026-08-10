@@ -11,6 +11,9 @@ export {
 
 export { SognaVirtualListTestingContext } from "./testing/context";
 
+export { installTestHarness } from "./testing/harness";
+export type { TestHarness } from "./testing/harness";
+
 export { ScrollModifierOption } from "./types";
 
 export type {

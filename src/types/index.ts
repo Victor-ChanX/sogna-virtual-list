@@ -34,6 +34,8 @@ export interface ListScrollLocation {
   scrollHeight: number;
   bottomOffset: number;
   isAtBottom: boolean;
+  isAtTop: boolean;
+  firstVisibleItemIndex: number;
   lastVisibleItemIndex: number;
   lastItemBottomOffset: number;
 }
@@ -218,6 +220,20 @@ export interface SognaVirtualListProps<Data, Context> extends ScrollerProps {
   ScrollElement?: ScrollElementComponent<Context> | "div";
   onScroll?: (location: ListScrollLocation) => void;
   onRenderedDataChange?: (range: Data[]) => void;
+  /**
+   * Fires once when the viewport reaches the top of the list (edge-triggered;
+   * re-arms after leaving the top zone). The typical chat trigger for loading
+   * older history. Scroll compensation from a `prepend` moves the viewport
+   * out of the zone, so applying the loaded page re-arms the callback without
+   * refiring it.
+   */
+  onStartReached?: (firstVisibleItemIndex: number) => void;
+  /** Edge-triggered counterpart of `onStartReached` for the list end. */
+  onEndReached?: (lastVisibleItemIndex: number) => void;
+  /** Distance in pixels from the top edge that counts as "at top". */
+  atTopThreshold?: number;
+  /** Distance in pixels from the bottom edge that counts as "at bottom". */
+  atBottomThreshold?: number;
   HeaderWrapper?: HeaderWrapperComponent;
   StickyHeaderWrapper?: StickyHeaderWrapperComponent;
   FooterWrapper?: FooterWrapperComponent;
@@ -239,6 +255,11 @@ export interface SognaVirtualListLicenseProps {
 export interface SognaVirtualListTestingContextValue {
   viewportHeight: number;
   itemHeight: number;
+  /**
+   * Optional per-item height resolver for tests that need heterogeneous or
+   * changing heights. Takes precedence over `itemHeight`.
+   */
+  getItemHeight?: (data: unknown, index: number) => number;
 }
 
 export interface VisibleItem<Data> {

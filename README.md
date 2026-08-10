@@ -10,12 +10,20 @@ items, and jumping to a known item.
 
 ## Features
 
-- Dynamic item measurement with `ResizeObserver`.
+- Dynamic item measurement with a single shared `ResizeObserver` and
+  identity-keyed size caching (sizes survive prepend/insert/delete).
 - Scroll-position repair for prepend, append, trim, replace, and streaming
-  updates.
+  updates — anchoring is computed from post-measurement geometry, so loading
+  history never jumps the viewport.
+- O(log n) scroll math (Fenwick offset tree) and rAF-coalesced scroll events.
+- Time-based smooth scrolling that chases live targets while content streams,
+  is interruptible by user input, and respects `prefers-reduced-motion`.
+- `onStartReached`/`onEndReached` edge-triggered callbacks built for infinite
+  history loading (no refire during prepend compensation).
 - Imperative data and scroll methods through a forwarded ref or hook.
 - Header, footer, sticky header, sticky footer, empty state, and custom scroller
   slots.
+- SSR-safe and React `StrictMode`-safe.
 - TypeScript declarations generated from the source.
 - No runtime dependency beyond React and React DOM.
 
@@ -37,8 +45,8 @@ npm install react react-dom
 - Node.js 18 or newer for local development and builds.
 - A browser environment with `ResizeObserver`.
 
-`useWindowScroll` and `customScrollParent` are not implemented in `0.1.0`.
-Passing either prop falls back to the internal scroller and logs a warning.
+`useWindowScroll` and `customScrollParent` are not implemented yet. Passing
+either prop falls back to the internal scroller and logs a dev-only warning.
 
 ## Basic Usage
 
@@ -139,6 +147,28 @@ const data = {
 };
 ```
 
+`onStartReached` is the natural trigger: it fires once when the viewport
+reaches the top of the list and re-arms only after leaving the top zone.
+Because the prepend compensation moves the viewport out of the zone, applying
+the loaded page never refires the callback — the classic infinite
+history-load loop cannot happen.
+
+```tsx
+<SognaVirtualList<Message, null>
+  data={data}
+  onStartReached={() => loadOlderMessages()}
+  // ...
+/>
+```
+
+### Controlled data semantics
+
+The scroll instruction is the **data array identity** plus the modifier's
+semantics. A parent re-render that recreates the `{ data }` wrapper object
+around the same array does not re-apply the modifier; passing a new array does.
+You do not need to memoize the wrapper — memoize the array itself, which chat
+state usually does naturally.
+
 ## Imperative API
 
 Use a ref when the owner component needs to control the list:
@@ -161,6 +191,11 @@ const ref = createRef<SognaVirtualListMethods<Message, null>>();
 
 ref.current?.scrollToItem({ index: "LAST", align: "end", behavior: "smooth" });
 ```
+
+Item locations accept `"LAST"` and negative indices with `Array.prototype.at`
+semantics (`-1` is the last item). For smooth scrolls, an optional `done`
+callback fires when the animation actually completes; it does not fire if the
+user interrupts the scroll or a newer scroll supersedes it.
 
 Use `useSognaVirtualListMethods` from inside the list tree:
 
@@ -267,8 +302,13 @@ Core props:
 - `Header`, `StickyHeader`, `Footer`, `StickyFooter`, `EmptyPlaceholder`:
   optional slot components.
 - `ScrollElement`: custom scroll element component or `"div"`.
-- `onScroll`: receives the current `ListScrollLocation`.
+- `onScroll`: receives the current `ListScrollLocation` (including `isAtTop`,
+  `isAtBottom`, `firstVisibleItemIndex`, and `lastVisibleItemIndex`).
 - `onRenderedDataChange`: receives the currently rendered data range.
+- `onStartReached` / `onEndReached`: edge-triggered when the viewport reaches
+  the top/bottom of the list; re-armed after leaving the zone.
+- `atTopThreshold` / `atBottomThreshold`: pixel distance that counts as being
+  at an edge (default 4).
 - `shortSizeAlign`: `"top"`, `"bottom"`, or `"bottom-smooth"`. Overrides the
   alignment implied by `messageFlow`.
 - `increaseViewportBy`: extra pixels rendered above and below the viewport.
@@ -278,7 +318,8 @@ Core props:
 ## Testing
 
 `SognaVirtualListTestingContext` lets tests provide deterministic viewport and
-item sizes.
+item sizes. `getItemHeight` (optional) resolves heterogeneous per-item heights;
+it takes precedence over the flat `itemHeight`.
 
 ```tsx
 import {
@@ -288,7 +329,11 @@ import {
 
 render(
   <SognaVirtualListTestingContext.Provider
-    value={{ viewportHeight: 400, itemHeight: 40 }}
+    value={{
+      viewportHeight: 400,
+      itemHeight: 40,
+      getItemHeight: (data) => heights.get((data as Message).id) ?? 40,
+    }}
   >
     <SognaVirtualList
       data={{ data: messages }}
@@ -299,6 +344,18 @@ render(
 );
 ```
 
+For jsdom, `installTestHarness` installs a controllable `ResizeObserver` mock
+and an `Element.scrollTo` stub, and lets tests simulate streaming growth:
+
+```ts
+import { installTestHarness } from "sogna-virtual-list";
+
+const harness = installTestHarness();
+// ...render, interact...
+harness.resize(rowElement, 120); // the row grew to 120px
+harness.restore();
+```
+
 ## Development
 
 ```bash
@@ -307,6 +364,12 @@ npm run typecheck
 npm run test
 npm run build
 npm run pack:dry-run
+```
+
+Run the local streaming-chat demo (token streaming, history loading, trims):
+
+```bash
+npm run demo
 ```
 
 Run the full local validation before publishing:

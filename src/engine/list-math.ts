@@ -10,6 +10,21 @@ export const DEFAULT_ITEM_HEIGHT = 72;
 
 export const DEFAULT_AT_BOTTOM_THRESHOLD = 4;
 
+export const DEFAULT_AT_TOP_THRESHOLD = 4;
+
+/** Shared empty location so default values keep referential identity. */
+export const EMPTY_SCROLL_LOCATION: ListScrollLocation = Object.freeze({
+  listOffset: 0,
+  visibleListHeight: 0,
+  scrollHeight: 0,
+  bottomOffset: 0,
+  isAtBottom: false,
+  isAtTop: true,
+  firstVisibleItemIndex: 0,
+  lastVisibleItemIndex: 0,
+  lastItemBottomOffset: 0,
+});
+
 export type VisibleRange = {
   start: number;
   end: number;
@@ -38,11 +53,12 @@ export function normalizeLocation(
     };
   }
 
+  // Negative indices follow Array.prototype.at semantics: -1 is the last item.
   const rawIndex =
     location.index === "LAST"
       ? lastIndex
       : location.index < 0
-        ? lastIndex + location.index
+        ? lastIndex + 1 + location.index
         : location.index;
 
   return {
@@ -72,14 +88,6 @@ export function sumHeights(heights: readonly number[], count: number) {
 
 export function offsetOf(heights: readonly number[], index: number) {
   return sumHeights(heights, index);
-}
-
-export function rangeHeight(
-  heights: readonly number[],
-  start: number,
-  count: number,
-) {
-  return sumHeights(heights.slice(start, start + count), count);
 }
 
 export function calculateVisibleRange(params: {
@@ -198,6 +206,7 @@ export function calculateScrollLocation(params: {
   viewportHeight: number;
   scrollHeight: number;
   atBottomThreshold?: number;
+  atTopThreshold?: number;
 }): ListScrollLocation {
   const {
     heights,
@@ -206,9 +215,12 @@ export function calculateScrollLocation(params: {
     viewportHeight,
     scrollHeight,
     atBottomThreshold = DEFAULT_AT_BOTTOM_THRESHOLD,
+    atTopThreshold = DEFAULT_AT_TOP_THRESHOLD,
   } = params;
   const bottomOffset = Math.max(0, scrollHeight - scrollTop - viewportHeight);
   const viewportBottom = scrollTop + viewportHeight;
+  let firstVisibleItemIndex = 0;
+  let firstVisibleFound = false;
   let lastVisibleItemIndex = 0;
   let lastItemBottomOffset = 0;
   let offset = 0;
@@ -216,6 +228,11 @@ export function calculateScrollLocation(params: {
   for (let index = 0; index < itemCount; index += 1) {
     const height = heightAt(heights, index);
     const itemBottom = offset + height;
+
+    if (!firstVisibleFound && itemBottom > scrollTop) {
+      firstVisibleItemIndex = index;
+      firstVisibleFound = true;
+    }
 
     if (itemBottom <= viewportBottom) {
       lastVisibleItemIndex = index;
@@ -233,6 +250,8 @@ export function calculateScrollLocation(params: {
     scrollHeight,
     bottomOffset,
     isAtBottom: bottomOffset <= atBottomThreshold,
+    isAtTop: scrollTop <= atTopThreshold,
+    firstVisibleItemIndex,
     lastVisibleItemIndex,
     lastItemBottomOffset,
   };
