@@ -1,5 +1,9 @@
 # sogna-virtual-list
 
+[![CI](https://github.com/Victor-ChanX/sogna-virtual-list/actions/workflows/ci.yml/badge.svg)](https://github.com/Victor-ChanX/sogna-virtual-list/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/sogna-virtual-list.svg)](https://www.npmjs.com/package/sogna-virtual-list)
+[![license](https://img.shields.io/npm/l/sogna-virtual-list.svg)](./LICENSE)
+
 A lightweight React virtual list for chat, feeds, logs, and dynamic-height
 message UIs.
 
@@ -45,8 +49,9 @@ npm install react react-dom
 - Node.js 18 or newer for local development and builds.
 - A browser environment with `ResizeObserver`.
 
-`useWindowScroll` and `customScrollParent` are not implemented yet. Passing
-either prop falls back to the internal scroller and logs a dev-only warning.
+The list always owns its own scroller. Virtualizing against the window or an
+arbitrary ancestor element is not supported — see
+[#1](https://github.com/Victor-ChanX/sogna-virtual-list/issues/1).
 
 ## Basic Usage
 

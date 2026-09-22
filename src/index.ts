@@ -1,7 +1,4 @@
-export {
-  SognaVirtualList,
-  SognaVirtualListLicense,
-} from "./components/SognaVirtualList";
+export { SognaVirtualList } from "./components/SognaVirtualList";
 
 export {
   useCurrentlyRenderedData,
@@ -41,7 +38,6 @@ export type {
   ShortSizeAlign,
   StickyFooterWrapperComponent,
   StickyHeaderWrapperComponent,
-  SognaVirtualListLicenseProps,
   SognaVirtualListMethods,
   SognaVirtualListProps,
   SognaVirtualListTestingContextValue,

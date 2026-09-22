@@ -33,7 +33,6 @@ import type {
   ScrollBehavior,
   ScrollElementComponent,
   ScrollModifier,
-  SognaVirtualListLicenseProps,
   SognaVirtualListMethods,
   SognaVirtualListProps,
 } from "../types";
@@ -172,8 +171,6 @@ function SognaVirtualListInner<Data, Context>(
     FooterWrapper = DefaultWrapper as HeaderWrapperComponent,
     StickyFooterWrapper:
       StickyFooterWrapperProp = StickyFooterWrapper as HeaderWrapperComponent,
-    useWindowScroll = false,
-    customScrollParent = null,
     ScrollElement = "div",
     increaseViewportBy = 0,
     onStartReached,
@@ -184,8 +181,23 @@ function SognaVirtualListInner<Data, Context>(
     itemIdentity = identity<Data>,
     enforceStickyFooterAtBottom = false,
     style,
-    ...scrollerProps
+    ...restProps
   } = props;
+
+  // Not part of the public prop types: `useWindowScroll` and
+  // `customScrollParent` were declared but never implemented. They are
+  // destructured out so a JS caller passing them does not spread unknown
+  // attributes onto the scroller DOM node. Real support is tracked in
+  // https://github.com/Victor-ChanX/sogna-virtual-list/issues/1.
+  const {
+    useWindowScroll,
+    customScrollParent,
+    ...scrollerProps
+  } = restProps as typeof restProps & {
+    useWindowScroll?: boolean;
+    customScrollParent?: HTMLElement | null;
+  };
+
   const testingContext = useContext(SognaVirtualListTestingContext);
   const shortSizeAlign =
     shortSizeAlignProp ?? (messageFlow === "bottom-up" ? "bottom" : "top");
@@ -722,7 +734,9 @@ function SognaVirtualListInner<Data, Context>(
       process?.env?.NODE_ENV !== "production"
     ) {
       console.warn(
-        "sogna-virtual-list: useWindowScroll/customScrollParent are not implemented yet; using the internal scroller.",
+        "sogna-virtual-list: useWindowScroll/customScrollParent are not " +
+          "supported and were ignored; the internal scroller is used. " +
+          "Tracking: https://github.com/Victor-ChanX/sogna-virtual-list/issues/1",
       );
     }
   }, [customScrollParent, useWindowScroll]);
@@ -1156,9 +1170,3 @@ export const SognaVirtualList = forwardRef(SognaVirtualListInner) as <
     ref?: React.Ref<SognaVirtualListMethods<Data, Context>>;
   },
 ) => React.ReactElement;
-
-export function SognaVirtualListLicense({
-  children,
-}: SognaVirtualListLicenseProps) {
-  return <>{children}</>;
-}

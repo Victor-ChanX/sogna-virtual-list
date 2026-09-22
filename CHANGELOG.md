@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0
+
+Public-API cleanup ahead of open-sourcing the repository. No behavior changes.
+
+### Removed (breaking)
+
+- `SognaVirtualListLicense` and `SognaVirtualListLicenseProps`. The component
+  was a no-op passthrough with a `licenseKey` prop that was never read — this
+  package is MIT licensed and has no licensing gate. Delete the wrapper; the
+  list works without it.
+- `useWindowScroll` and `customScrollParent` are gone from
+  `SognaVirtualListProps`. They were declared but never implemented. Both are
+  still accepted-and-ignored at runtime (with a dev warning) so JavaScript
+  callers do not spread unknown attributes onto the scroller element. Real
+  support for external scroll containers is tracked in
+  [#1](https://github.com/Victor-ChanX/sogna-virtual-list/issues/1).
+
+### Added
+
+- GitHub Actions CI: typecheck, tests, build, and `npm pack` verification on
+  Node 18/20/22/24, plus a job that runs the suite against the React 18 end of
+  the declared peer range.
+
 ## 0.2.0
 
 Foundation hardening release: the internal state management was rebuilt around

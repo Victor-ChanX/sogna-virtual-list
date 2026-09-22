@@ -239,17 +239,10 @@ export interface SognaVirtualListProps<Data, Context> extends ScrollerProps {
   FooterWrapper?: FooterWrapperComponent;
   StickyFooterWrapper?: StickyFooterWrapperComponent;
   shortSizeAlign?: ShortSizeAlign;
-  useWindowScroll?: boolean;
-  customScrollParent?: HTMLElement | null | undefined;
   increaseViewportBy?: number;
   data?: DataWithScrollModifier<Data> | null | undefined;
   itemIdentity?: (item: Data) => unknown;
   enforceStickyFooterAtBottom?: boolean;
-}
-
-export interface SognaVirtualListLicenseProps {
-  licenseKey?: string;
-  children: React.ReactNode;
 }
 
 export interface SognaVirtualListTestingContextValue {

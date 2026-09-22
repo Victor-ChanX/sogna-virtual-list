@@ -1,6 +1,6 @@
 {
   "name": "sogna-virtual-list",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A lightweight React virtual list tuned for chat, feeds, and dynamic-height message UIs.",
   "license": "MIT",
   "author": "Victor Chan",
