@@ -22,9 +22,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The floor declared in package.json `engines`, plus the current LTS
-        # and current release lines.
-        node: [18, 20, 22, 24]
+        # Node 18 is excluded on purpose — see the `node18-compat` job.
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
 
@@ -40,6 +39,34 @@ jobs:
 
       - name: Test
         run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify package contents
+        run: npm run pack:dry-run
+
+  node18-compat:
+    # `engines` advertises Node >= 18, so installing, typechecking and building
+    # the package on Node 18 has to keep working. The test suite is excluded:
+    # jsdom 27 pulls in a dependency that `require()`s an ES module, which
+    # needs the `require(ESM)` support added in Node 20.19 / 22.12 — a
+    # limitation of the test environment, not of the published package (which
+    # has no runtime dependency beyond React).
+    name: node 18 install + build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
 
       - name: Build
         run: npm run build

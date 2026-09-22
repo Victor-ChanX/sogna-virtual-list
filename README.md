@@ -46,7 +46,10 @@ npm install react react-dom
 ## Requirements
 
 - React 18 or React 19.
-- Node.js 18 or newer for local development and builds.
+- Node.js 18 or newer to install and build the package.
+- Node.js 20.19 or newer to run the test suite (`jsdom` needs `require(ESM)`
+  support). The published package itself has no Node requirement beyond
+  `engines` — it has no runtime dependency other than React.
 - A browser environment with `ResizeObserver`.
 
 The list always owns its own scroller. Virtualizing against the window or an

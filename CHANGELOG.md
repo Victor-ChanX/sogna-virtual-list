@@ -20,8 +20,10 @@ Public-API cleanup ahead of open-sourcing the repository. No behavior changes.
 ### Added
 
 - GitHub Actions CI: typecheck, tests, build, and `npm pack` verification on
-  Node 18/20/22/24, plus a job that runs the suite against the React 18 end of
-  the declared peer range.
+  Node 20/22/24, plus a job that runs the suite against the React 18 end of the
+  declared peer range, plus a Node 18 install/typecheck/build job that keeps the
+  `engines: >=18` claim honest. The test suite itself requires Node 20.19+
+  because jsdom 27 needs `require(ESM)`; this does not affect consumers.
 
 ## 0.2.0
 
